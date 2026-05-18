@@ -1,0 +1,57 @@
+name: Make PNG Presets
+
+on:
+  workflow_dispatch:
+    inputs:
+      background:
+        description: "Background hex color. Leave empty for transparent."
+        required: false
+        default: ""
+
+jobs:
+  make-png-presets:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        size: [160, 320, 640, 1280, 2560, 4096]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Generate transparent PNGs
+        if: ${{ inputs.background == '' }}
+        run: python make_png.py "${{ matrix.size }}"
+
+      - name: Generate PNGs with background
+        if: ${{ inputs.background != '' }}
+        run: python make_png.py "${{ matrix.size }}" "${{ inputs.background }}"
+
+      - name: Set artifact metadata
+        id: meta
+        shell: bash
+        run: |
+          if [ -z "${{ inputs.background }}" ]; then
+            echo "name=png-${{ matrix.size }}" >> "$GITHUB_OUTPUT"
+            echo "path=out_${{ matrix.size }}/" >> "$GITHUB_OUTPUT"
+          else
+            background="${{ inputs.background }}"
+            background="${background#\#}"
+            echo "name=png-${{ matrix.size }}-${background}" >> "$GITHUB_OUTPUT"
+            echo "path=out_${{ matrix.size }}_${background}/" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload PNG artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.meta.outputs.name }}
+          path: ${{ steps.meta.outputs.path }}
