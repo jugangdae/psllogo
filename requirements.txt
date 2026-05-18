@@ -1,0 +1,2 @@
+aggdraw==1.4.1
+pillow==12.2.0
