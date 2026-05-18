@@ -7,7 +7,7 @@ It converts the SVG logos in the `svg/` folder into square PNG logos.
 Generate PNG files directly from GitHub. Choose one of the two workflows:
 
 - **Make PNG**: enter one custom size.
-- **Make PNG Presets**: generate all preset sizes: `160`, `320`, `640`, `1280`, `2560`, `4096`.
+- **Make PNG Presets**: generate all preset sizes: `160`, `320`, `640`, `1280`, `2560`, `4096`. It also runs automatically on every push to `main`.
 
 To run either workflow:
 
